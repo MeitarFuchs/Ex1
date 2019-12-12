@@ -1,4 +1,5 @@
 -Ex1 project-
+
 our project is about functions.
 our four classs are Monom, Polynom, ComplexFunction and Function_Gui are typs of function.
 you can use our Java project to solve math problems(in the class typs) and calculate function(by divid/mul/plus/min/mas/comp tools).
