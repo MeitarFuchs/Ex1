@@ -35,7 +35,6 @@ import Ex1.functions;
 public class gui_boaz_test {
 	public static void main(String[] a) 
 	{
-		Polynom p = new Polynom("x");
 		functions data = FunctionsFactory();
 		int w=1000, h=600, res=200;
 		Range rx = new Range(-10,10);
@@ -54,8 +53,6 @@ public class gui_boaz_test {
 
 		String JSON_param_file = "GUI_params.txt";
 		data.drawFunctions(JSON_param_file);
-		System.out.println("secss json");
-
 	}
 	private functions _data=null;
 	//		@BeforeAll
@@ -75,38 +72,55 @@ public class gui_boaz_test {
 	@Test
 	void testInitFromFile() 
 	{
+		Functions_GUI FuncGS = new Functions_GUI();
+		ComplexFunction cf=new ComplexFunction();
+		function f0 = new ComplexFunction();
+		f0=cf.initFromString("mul(plus(2x^3+6x,9),comp(x,2x))");
+		function f1 = new Polynom("2x^3+6x");
+		function f2 = new Monom("x");
+		Polynom p1 = new Polynom("-2X-8");
+		Polynom p2 = new Polynom("4X");
+		Monom m1 = new Monom("12x^2");
+		FuncGS.add(f0);
+		FuncGS.add(f1);
+		FuncGS.add(f2);
+		FuncGS.add(p1);
+		FuncGS.add(p2);
+		FuncGS.add(m1);
+		
 		try{
+			FuncGS.saveToFile("newSaveFile.txt");
 			Functions_GUI FuncG = new Functions_GUI();
-			FuncG.initFromFile("C:\\Users\\meita\\eclipse-workspace\\Ex1\\text_for_read\\guiExample.txt");
+			FuncG.initFromFile("C:\\Users\\meita\\eclipse-workspace\\Ex1\\text_for_read\\newSaveFile.txt");
 		}
 		catch(Exception e) {
 			fail();
 		}
-
-
 	}
 
 	@Test
 	void testSaveToFile() {
-		try {	
-			Functions_GUI FuncGS = new Functions_GUI();
-			ComplexFunction cf=new ComplexFunction();
-			function f0 = new ComplexFunction();
-			f0=cf.initFromString("mul(plus(2x^3+6x,9),comp(x,2x))");
-			function f1 = new Polynom("2x^3+6x");
-			function f2 = new Monom("x");
-			Polynom p1 = new Polynom("-2X");
-			Polynom p2 = new Polynom("4X");
-			Monom m1 = new Monom("12x^2");
-			FuncGS.add(f0);
-			FuncGS.add(f1);
-			FuncGS.add(f2);
-			FuncGS.add(p1);
-			FuncGS.add(p2);
-			FuncGS.add(m1);
-			FuncGS.saveToFile("salome.txt");
+		Functions_GUI FuncGS = new Functions_GUI();
+		ComplexFunction cf=new ComplexFunction();
+		function f0 = new ComplexFunction();
+		f0=cf.initFromString("mul(plus(2x^3+6x,9),comp(x,2x))");
+		function f1 = new Polynom("x^5-2x^3+6x");
+		function f2 = new Monom("x");
+		Polynom p1 = new Polynom("-2X-8");
+		Polynom p2 = new Polynom("4X");
+		Monom m1 = new Monom("9x^2");
+		FuncGS.add(f0);
+		FuncGS.add(f1);
+		FuncGS.add(f2);
+		FuncGS.add(p1);
+		FuncGS.add(p2);
+		FuncGS.add(m1);
+		
+		try{
+			FuncGS.saveToFile("JustSaveFile.txt");
+			
 		}
-		catch (Exception e) {
+		catch(Exception e) {
 			fail();
 		}
 
@@ -125,7 +139,7 @@ public class gui_boaz_test {
 	//		}
 	public static functions FunctionsFactory() {
 		functions ans = new Functions_GUI();
-		String s1 = "3.1+2.4x^2 -x^4";
+		String s1 = "3.1+2.4 x^2 -x^4";
 		String s2 = "5+2x-3.3x + 0.1x^5";
 		String[] s3 = {"x+3","x-2", "x-4"};
 		Polynom p1 = new Polynom(s1);
@@ -135,7 +149,7 @@ public class gui_boaz_test {
 		for(int i=1;i<s3.length;i++) {
 			cf3.mul(new Polynom(s3[i]));
 		}
-
+		
 		ComplexFunction cf = new ComplexFunction(Operation.Plus, p1,p2);
 		ComplexFunction cf4 = new ComplexFunction("div", new Polynom("x+1"),cf3);
 		cf4.plus(new Monom("2"));
@@ -143,11 +157,7 @@ public class gui_boaz_test {
 		ans.add(cf4.copy());
 		cf.div(p1);
 		ans.add(cf.copy());
-
-		System.out.println("cf.toString():\n"+cf.toString());
-
 		String s = cf.toString();
-		System.out.println("s"+s);
 		function cf5 = cf4.initFromString(s1);
 		function cf6 = cf4.initFromString(s2);
 		ans.add(cf5.copy());
