@@ -38,7 +38,7 @@ public class Polynom implements Polynom_able {
 
 	}
 	/**
-	 * check if the string is the form of a polynom and build it if is it
+	 * check if the string is the from the fram of a polynom and build it if is it
 	 * Polynom from a String such as:
 	 *  {"x", "3+1.4X^3-34x", "(2x^2-4)*(-1.2x-7.1)", "(3-3.4x+1)*((3.1x-1.2)-(3X^2-3.1))"};
 	 * @param s: is a string represents a Polynom

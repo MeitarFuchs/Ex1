@@ -220,8 +220,6 @@ public class ComplexFunction implements complex_function {
 				else 
 					this.right = initFromString(beRight);
 
-				//	function left = initFromString(beLeft);
-				//	function right = initFromString(beRight);
 				complex_function func1= new ComplexFunction(findOp(s), left ,right );
 				return func1;
 			}
