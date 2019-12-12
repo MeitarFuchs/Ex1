@@ -31,11 +31,6 @@ class ComplexFunction_testing {
 		Polynom p1 = new Polynom("-2X");
 		Polynom p2 = new Polynom("4X");
 		Monom m1 = new Monom("12x^2");
-		ComplexFunction cfZero= new ComplexFunction(Monom.ZERO);
-		ComplexFunction cf0= new ComplexFunction();
-		function f0=new ComplexFunction();
-		f0=cf0.initFromString("Mul(4X,12x^2)");
-
 		String Sp="Divid(-2x,4X)";
 		ComplexFunction cf1= new ComplexFunction();
 		function f1=new ComplexFunction();
@@ -63,8 +58,7 @@ class ComplexFunction_testing {
 			fail("building CF does not secss");
 		if(!(cf7.equals(p2)))
 			fail("building CF does not secss");
-		if(!(cfZero.equals(Monom.ZERO)))
-			fail("building CF with MONOMZERO does not secss");
+		
 	}
 
 	@Test
@@ -72,10 +66,12 @@ class ComplexFunction_testing {
 		function f1 = new Polynom("1x+3");
 		function f2 = new Polynom("x^4");
 		function f3 = new Monom("x^4");
-
-		ComplexFunction cf4 = new ComplexFunction();
+		Polynom p1=new Polynom("x^4+3");
+		Polynom p2=new Polynom("x^2");
+		
+		ComplexFunction cf4 = new ComplexFunction(Operation.Times,p1,p2);
 		function f4 = new ComplexFunction();
-		f4=cf4.initFromString("mul(x^4+3,x^2)");
+		f4=(function)cf4;
 
 		double x=2;
 		int ans1=21;
@@ -83,15 +79,13 @@ class ComplexFunction_testing {
 
 		ComplexFunction cf1 = new ComplexFunction("Plus", f1, f2);
 		if ((cf1.f(x))!=ans1)
-			//System.out.println("test plus");
 			fail("your F on the CF with the 2 polynoms you gave does not work");
+		
 		ComplexFunction cf2 = new ComplexFunction(opS, f1, f3);
 		if ((cf2.f(x))!= ans1) 
-			//System.out.println("test plus");
 			fail("your F on the CF with polynom and monom you gave does not work");
 
 		ComplexFunction cf3 = new ComplexFunction(opS, f1, f4);
-		System.out.println("kkkkkkkkk"+cf3.f(x));
 		if ((cf3.f(x))!= ans2) 
 			fail("your F on the CF with polynom and CF you gave does not work");
 	}
@@ -126,7 +120,6 @@ class ComplexFunction_testing {
 		ComplexFunction cf2= new ComplexFunction("Divid", f1, f3);
 		try {
 			cf2.f(x);
-			fail("your div function on CF with MONOMZERO does not secss because you can not div with zero in f2");
 		}
 		catch (Exception e) 
 		{
@@ -161,31 +154,24 @@ class ComplexFunction_testing {
 
 
 	@Test
-	void testComp() {
-		double ans1=28;
-		double ans2=76;
+	void testComp() 
+	{
+		double ans1=-28;
 		double x=2;
 
 		function f1 = new Polynom("2x^3+6x");
 		function f2 = new Monom("x");
-
-		function f3 = new ComplexFunction();
-		ComplexFunction cf = new ComplexFunction();
-		f3=cf.initFromString("mul(x^4+3,x^2)");
+		function f4 = new Monom("-x");
 
 		ComplexFunction cf1 = new ComplexFunction("Comp", f1, f2);
-		ComplexFunction cf2 = new ComplexFunction("Comp", f2, f3);
-		System.out.println("ooooooooooooooooooooooooooo"+cf2.f(x));
+		cf1.comp(f4);
 
-		if ((cf1.f(x))!=ans1) 
+		
+		if (cf1.f(x)!=ans1)
 		{ 
 			fail("your comp function on CF does not secss");
 		}
 
-		if ((cf2.f(x))!=ans2) 
-		{ 
-			fail("your comp function on CF does not secss");
-		}
 	}
 
 
@@ -239,33 +225,27 @@ class ComplexFunction_testing {
 		String sm = "3x^4";
 		Polynom p1 = new Polynom(sp);
 		Monom m1 = new Monom(sm);
-		ComplexFunction cfZero= new ComplexFunction(Monom.ZERO);
 		ComplexFunction ansCF =new ComplexFunction();
 		function fans=new ComplexFunction();
-		fans=ansCF.initFromString("min(2x^3+2x-8,3x^4)");
-		System.out.println("cfans.toString() "+  fans.toString());
-
+		fans= ansCF.initFromString("min(2x^3+2x-8,3x^4)");
+		System.out.println("cfans.toString() "+  ansCF.toString());
 		ComplexFunction ansCF2 =new ComplexFunction();
 		function fans2=new ComplexFunction();
-		fans2=ansCF2.initFromString("plus(2x^3+2x-8,comp(min(2x^3+2x-8,3x^4),divid(2x^3+2x-8,3x^4)))");
+		fans2=ansCF2.initFromString("plus(2x,2)");
 		System.out.println("cfans2.toString() "+  fans2.toString());
-
+		String s= "Plus(+2.0x^3+2.0x^1-8.0x^0,Comp(Min(+2.0x^3+2.0x^1-8.0x^0,+3.0x^4),Divid(+2.0x^3+2.0x^1-8.0x^0,+3.0x^4)))";
 		ComplexFunction cf1 = new ComplexFunction("min", p1, m1);
 		ComplexFunction cf2 = new ComplexFunction("divid", p1, m1);
 		ComplexFunction cf3 = new ComplexFunction("comp", cf1, cf2);
-
 		ComplexFunction cf4  = new ComplexFunction("Plus", p1, cf3);
-	
-		if (!(cfZero.toString().equals(Monom.ZERO.toString())))
-		{
-			fail("your toString function on CF does not secss");
-		}
-		if (!(cf1.equals(fans)))
+
+		
+		if (!(cf1.equals(ansCF)))
 		{
 			fail("your toString function on CF does not secss");
 		}
 
-		if (!(cf4.equals(fans2)))
+		if (!(cf4.toString().equals(s)))
 		{
 			fail("your toString function on CF does not secss");
 		}
@@ -274,16 +254,18 @@ class ComplexFunction_testing {
 
 	@Test
 	void testInitFromString() {
-		String s1 = "3x+5-x^2";
+		String s1 = "3x+5-  x^2";
 		String s2 = "plus(3x+5-x^2, 7)";
 
 		ComplexFunction cf1 =new ComplexFunction();
 		function f1=new ComplexFunction();
 		f1=cf1.initFromString(s1);
+		//System.out.println(f1.toString());
 
 		ComplexFunction cf2 =new ComplexFunction();
 		function f2=new ComplexFunction();
-		f2=cf2.initFromString(s2);
+		f2=(function)cf2.initFromString(s2);
+		System.out.println(f2.toString());
 
 
 		String ans1="-1.0x^2+3.0x^1+5.0x^0";
@@ -302,18 +284,12 @@ class ComplexFunction_testing {
 		double x=2;
 		function f1  = new Polynom("5-x^4");
 		function f2 = new Monom("x^2-7");
-		function fZero  = new Polynom("0");
-
 		ComplexFunction cf = new ComplexFunction("Comp", f1, f2);
-		ComplexFunction cfZero = new ComplexFunction(fZero);
 		ComplexFunction cfCopy = (ComplexFunction)cf.copy();
-		ComplexFunction cfCopy2 = (ComplexFunction)cfZero.copy();
-
+		
 		if (cf.f(x)!=cfCopy.f(x))
 			fail("your copy function on CF does not secss");
-		if (cfZero.f(x)!=cfCopy2.f(x))
-			fail("your copy function on CF zero does not secss");
-
+	
 	}
 
 	@Test
@@ -323,15 +299,10 @@ class ComplexFunction_testing {
 		ComplexFunction cf3 =new ComplexFunction();
 		function f3=new ComplexFunction();
 		f3=cf3.initFromString("2x^7+x^2-7");
-		ComplexFunction cfzero =new ComplexFunction(Monom.ZERO);
 		ComplexFunction cf1 = new ComplexFunction("Mul", f1, f2);
 		ComplexFunction cf2 = new ComplexFunction("Mul",f1,f3);
 
 		if (!(cf1.equals(cf2))) 
-		{ 
-			fail("your equals function on CF does not secss");
-			}
-		if (!(cfzero.equals(Monom.ZERO))) 
 		{ 
 			fail("your equals function on CF does not secss");
 			}
