@@ -17,6 +17,7 @@ public class Monom implements function{
 
 	public static final Monom ZERO = new Monom(0,0);
 	public static final Monom MINUS1 = new Monom(-1,0);
+	public static final Monom One1 = new Monom(+1,0);
 	public static final double EPSILON = 0.0000001;
 	public static final Comparator<Monom> _Comp = new Monom_Comperator(); // ×”×—×•×–×”
 	public static Comparator<Monom> getComp() {return _Comp;}

@@ -34,7 +34,6 @@ public class Polynom implements Polynom_able {
 	 * @param s the string she get to build the polynom
 	 */
 	public Polynom(String s) {
-
 		RecPolynom(s);
 
 	}
@@ -46,6 +45,7 @@ public class Polynom implements Polynom_able {
 	 */
 	public void RecPolynom(String s)
 	{
+		s=s.replace(" ", "");
 		int j=0;
 		int start=0;
 		String  Ms []=new String[s.length()];
@@ -81,7 +81,6 @@ public class Polynom implements Polynom_able {
 
 		for( int i=0; i< j; i++)
 		{
-
 			Monom m=new Monom(Ms[i]);
 			if (m.IsMonom(Ms[i])) 
 			{

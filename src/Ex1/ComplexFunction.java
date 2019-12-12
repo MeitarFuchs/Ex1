@@ -10,9 +10,17 @@ public class ComplexFunction implements complex_function {
 	 */
 	public ComplexFunction()
 	{
-		this.op=Operation.None;
+		this.op=null;
 		this.left=null;
 		this.right=null;
+
+	}
+	public ComplexFunction(Polynom p)
+	{
+		this.setLeft(p);
+		this.right=null;
+		this.op=Operation.None;
+		System.out.println(" P this.left"+this.left.toString());
 	}
 	/**
 	 * constructor who get Function 
@@ -20,9 +28,13 @@ public class ComplexFunction implements complex_function {
 	 */
 	public ComplexFunction(function f)
 	{
-		this.op=Operation.None;
-		this.left=f;
-		this.right=null;
+		if (f instanceof ComplexFunction)
+		{
+			this.op=((ComplexFunction) f).op;
+			this.left=((ComplexFunction) f).left;
+			this.right=((ComplexFunction) f).right();
+			System.out.println("this.left"+this.left.toString());
+		}
 	}
 	/**
 	 * constructor who get two function and one string 
@@ -36,8 +48,11 @@ public class ComplexFunction implements complex_function {
 
 		if (f1 != null)
 			this.left=f1;
+
 		if (f2 != null)
 			this.right=f2;
+
+		///System.out.println(" SFF this.left"+this.left.toString());
 	}
 	/**
 	 * constructor who get two function and one Operetion 
@@ -47,12 +62,26 @@ public class ComplexFunction implements complex_function {
 	 */
 	public ComplexFunction(Operation op ,function f1,function f2)
 	{
+		this.left= f1;
+		this.right= f2;
 		this.op=op;
 
-		if (f1 != null)
-			this.left=f1;
-		if (f2 != null)
-			this.right=f2;
+		if (f1==null)
+		{
+			this.left=null;
+		}		
+		if (f2==null) 
+		{ 
+
+			if (op==Operation.Plus||op==Operation.Min||op==Operation.Max||op==Operation.Comp)
+				this.right=Monom.ZERO;
+			if (op==Operation.Times||op==Operation.Divid)
+				this.right=Monom.One1;
+			if (op==Operation.None)
+				this.right=null;
+
+		}
+		System.out.println(" O this.left"+this.left.toString());
 	}
 
 	/** 
@@ -64,9 +93,10 @@ public class ComplexFunction implements complex_function {
 	{
 		int i=0;
 		String st="";
-		while (s.charAt(i)!= '(')
+		while (i<s.length() && s.charAt(i)!= '(')
 		{
 			st+=s.charAt(i);
+			System.out.println("s.charAt(i)"+s.charAt(i));
 			i++;
 		}
 		return st;
@@ -151,7 +181,7 @@ public class ComplexFunction implements complex_function {
 		int i=0;
 		boolean closeOpen=false;
 		boolean plusMinus=false;
-		
+
 		String beLeft="";
 		String beRight="";
 		function f=new ComplexFunction();
@@ -200,7 +230,7 @@ public class ComplexFunction implements complex_function {
 			}	
 			return func;
 		}
-		
+
 		if (!closeOpen && plusMinus) // maybe P
 		{
 			Polynom p= new Polynom(s);
@@ -228,7 +258,7 @@ public class ComplexFunction implements complex_function {
 		int i=0;
 		String tempOp="";
 		int countOpen=0;
-		int countClose=0;
+		//		int countClose=0;
 		int countPsik=0;
 
 		while (i<s.length()&& (s.charAt(i)!= '(')) 
@@ -256,8 +286,8 @@ public class ComplexFunction implements complex_function {
 				countPsik++;
 			if (s.charAt(i)=='(')
 				countOpen++;
-			if (s.charAt(i)==')')
-				countClose++;
+			//			if (s.charAt(i)==')')
+			//				countClose++;
 			i++;
 		}
 
@@ -292,6 +322,8 @@ public class ComplexFunction implements complex_function {
 		case "max":
 			return Operation.Max;
 		case "divid":
+			return Operation.Divid;
+		case "div":
 			return Operation.Divid;
 		case "comp":
 			return Operation.Comp;
@@ -340,6 +372,7 @@ public class ComplexFunction implements complex_function {
 			p=new Polynom(this.left.toString());
 			return p.f(x);
 		}
+
 		else // have left right 
 		{
 			switch (this.getOp()) 
@@ -353,8 +386,8 @@ public class ComplexFunction implements complex_function {
 					return this.left.f(x);
 				return  sum + (this.left.f(this.right.f(x)));
 			case Divid :
-				if (this.right.f(x)==0)
-					throw new RuntimeException("your f2 out 0, you can not divid with f2 0");
+				//				if (this.right.f(x)==0)
+				//					throw new RuntimeException("your f2 out 0, you can not divid with f2 0");
 				return sum + ( this.left.f(x) / this.right.f(x));
 			case Min :
 				if (this.left.f(x)<this.right.f(x))
@@ -385,17 +418,17 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public void plus(function f1) {
-		// TODO Auto-generated method stub
-		if (this.right()==null)
+
+		if (this.right!=null)
 		{
-			this.setOp(Operation.Plus);
-			this.setRight(f1);
+			this.left=this.copy();
+			this.op=Operation.Plus;
+			this.right=f1;	
 		}
 		else
 		{
-			this.setLeft(this);
-			this.setOp(Operation.Plus);
-			this.setRight(f1);
+			this.op=Operation.Plus;
+			this.right=f1;
 
 		}
 
@@ -407,40 +440,47 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public void mul(function f1) {
-		// TODO Auto-generated method stub
-		if (this.right()==null)
+
+		if (this.right==null)
 		{
-			this.setOp(Operation.Times);
-			this.setRight(f1);
+			this.op=Operation.Times;
+			this.right=f1;
 		}
 		else
 		{
-			this.setLeft(this);
-			this.setOp(Operation.Times);
-			this.setRight(f1);
+			this.left=this.copy();
+			this.op=Operation.Times;
+			this.right=f1;
 
 		}
 	}
 
 	/**
-	*update the complexFunction:
+	 *update the complexFunction:
 	 * this update to be the left ,the op update to be divid and f1 update to be the right
 	 * @param f1 the Function she get
 	 */
 	@Override
-	public void div(function f1) {
-		if (this.right()==null)
-		{
-			this.setOp(Operation.Divid);
-			this.setRight(f1);
-		}
-		else
-		{
-			this.setLeft(this);
-			this.setOp(Operation.Divid);
-			this.setRight(f1);
+	public void div(function f1)
+{
+		function v1 = this.copy();
+		this.op= Operation.Divid;
+		this.right = f1;
+		this.left = v1;
 
-		}
+		//		if (this.right!=null)
+		//		{
+		//			this.left=this;
+		//		this.op=Operation.Divid;
+		//		this.right=f1;
+		//		}
+		//		else
+		//		{
+		//		this.op=Operation.Divid;
+		//		this.right=f1;
+		//			
+		//
+		//		}
 
 	}
 
@@ -450,16 +490,16 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public void max(function f1) {
-		if (this.right()==null)
+		if (this.right==null)
 		{
-			this.setOp(Operation.Max);
-			this.setRight(f1);
+			this.op=Operation.Max;
+			this.right=f1;
 		}
 		else
 		{
-			this.setLeft(this);
-			this.setOp(Operation.Max);
-			this.setRight(f1);
+			this.left=this.copy();
+			this.op=Operation.Max;
+			this.right=f1;
 
 		}
 
@@ -471,16 +511,16 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public void min(function f1) {
-		if (this.right()==null)
+		if (this.right==null)
 		{
-			this.setOp(Operation.Min);
-			this.setRight(f1);
+			this.op=Operation.Min;
+			this.right=f1;
 		}
 		else
 		{
-			this.setLeft(this);
-			this.setOp(Operation.Min);
-			this.setRight(f1);
+			this.left=this.copy();
+			this.op=Operation.Min;
+			this.right=f1;
 
 		}
 
@@ -492,16 +532,16 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public void comp(function f1) {
-		if (this.right()==null)
+		if (this.right==null)
 		{
-			this.setOp(Operation.Comp);
-			this.setRight(f1);
+			this.op=Operation.Comp;
+			this.right=f1;
 		}
 		else
 		{
-			this.setLeft(this);
-			this.setOp(Operation.Comp);
-			this.setRight(f1);
+			this.left=this.copy();
+			this.op=Operation.Comp;
+			this.right=f1;
 
 		}
 
@@ -512,7 +552,7 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public function left() {
-		return this.left();
+		return this.left;
 	}
 
 	/** returns the right side of the complex function.
@@ -520,7 +560,7 @@ public class ComplexFunction implements complex_function {
 	 */
 	@Override
 	public function right() {
-		if (this.right()==null)
+		if (this.right==null)
 			return null;
 		else
 			return this.right;
@@ -537,13 +577,97 @@ public class ComplexFunction implements complex_function {
 	/**
 	 * print this complex_function 
 	 */
-	public String  toString() 
-	{
-		if (this.op== Operation.None)
-			return this.left.toString();
+	@Override
+	public String toString()
+	{		
+		String ans="";
+		
+		if(right == null) //its a polynom
+		{
+			return left.toString();
+		}
+		else
+		{
+			ans+=this.op + "(" + this.left.toString() + "," + this.right.toString() + ")";
+		}
+		
+		return ans;
+		
+//		if (this instanceof Monom )
+//		{	
+//			Monom m=new Monom (this.toString());
+//			m.toString();
+//		}
+//		else
+//
+//			if (this instanceof( Polynom))                  
+//			{	                                        
+//				Polynom p=new Polynom (this.toString());    
+//				p.toString();                           
+//			}              
+//
+//
+//
+//
+//
+//			else 
+//			{
+//				System.out.println("this.left"+this.left.toString());
+//				ans+=this.op + "(" + this.left + "," + this.right + ")";
+//			}
+//
+//		return ans;
 
-		return this.op+"("+this.left+","+this.right+")";
 	}
+	//	public String  toString() 
+	//	{
+	//		String ans="";
+	//		if(this.op.toString()!="None") 
+	//		{
+	//			switch(this.op.toString()) {
+	//			case "Plus":
+	//				ans+="plus";
+	//			case "Times":
+	//				ans+="times";
+	//			case "Min":
+	//				ans+="min";
+	//			case "Max":
+	//				ans+="max";
+	//			case "Comp":
+	//				ans+="comp";
+	//			case "Divid":
+	//				ans="divid";
+	////			default:
+	////				ans+="error";
+	//			}
+	//		}
+	//		ans+="(";
+	//		if(this.left!=null) 
+	//		{
+	//			ans+=this.left;	
+	//		}
+	//		if(this.right!=null) 
+	//		{
+	//			ans+=",";
+	//			ans+=this.right;
+	//			ans+=")";
+	//		}
+	//		if(this.right==null) 
+	//		{
+	//			ans+=")";
+	//		}
+	//		return ans;
+	//		if (this.op== Operation.None)
+	//			return this.left.toString();
+	//		if (this.left== null && this.right== null)
+	//			return this.op+"("+"null"+","+"null"+")";
+	//		System.out.println("this.op"+this.op);
+	//		System.out.println("this.right"+this.right);
+	//		//System.out.println("this.left"+this.left);
+	//		
+	//		return this.op+"("+this.left+","+this.right+")";
+
+
 
 	/**
 	 * create a new complex_function and copy this complex_function to the new complex_function 
@@ -557,7 +681,7 @@ public class ComplexFunction implements complex_function {
 	/*
 	 * this func take the object and check what kind of object it is, she get just the type of object : Polynom, Monom, ComplexFunction  
 	 *first of all she check if this looke like the object she get (by to string) and if not she check if F(x) is equal between (-100,100) 
-	* @return if looks the same or its equals for the all range the func return true else it return false. 
+	 * @return if looks the same or its equals for the all range the func return true else it return false. 
 	 */
 	public boolean equals(Object obj) 
 	{
@@ -576,15 +700,22 @@ public class ComplexFunction implements complex_function {
 				return false; 
 			}
 		}
-		
+
 		return true;
-		
-		
+
+
+	}
+
+	public static void main(String[] args) {
+		ComplexFunction c=new ComplexFunction();
+		function f= new ComplexFunction();
+		f=c.initFromString("max(max(max(max(plus(-1.0x^4 +2.4x^2 +3.1,+0.1x^5 +1.2999999999999998x +5.0),plus(div(+1.0x +1.0,mul(mul(+1.0x +3.0,+1.0x -2.0),+1.0x -4.0)),2.0)),div(plus(1.0x^4 +2.4x^2 +3.1,+0.1x^5 -1.2999999999999998x +5.0),-1.0x^4 +2.4x^2 +3.1)),-1.0x^4 +2.4x^2 +3.1),+0.1x^5 -1.2999999999999998x +5.0)");
+
+		System.out.println(f.toString());
 	}
 
 
 
 
-
-
 }
+
