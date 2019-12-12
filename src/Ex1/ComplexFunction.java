@@ -20,7 +20,6 @@ public class ComplexFunction implements complex_function {
 		this.setLeft(p);
 		this.right=null;
 		this.op=Operation.None;
-		System.out.println(" P this.left"+this.left.toString());
 	}
 	/**
 	 * constructor who get Function 
@@ -33,7 +32,6 @@ public class ComplexFunction implements complex_function {
 			this.op=((ComplexFunction) f).op;
 			this.left=((ComplexFunction) f).left;
 			this.right=((ComplexFunction) f).right();
-			System.out.println("this.left"+this.left.toString());
 		}
 	}
 	/**
@@ -51,8 +49,6 @@ public class ComplexFunction implements complex_function {
 
 		if (f2 != null)
 			this.right=f2;
-
-		///System.out.println(" SFF this.left"+this.left.toString());
 	}
 	/**
 	 * constructor who get two function and one Operetion 
@@ -81,7 +77,6 @@ public class ComplexFunction implements complex_function {
 				this.right=null;
 
 		}
-		System.out.println(" O this.left"+this.left.toString());
 	}
 
 	/** 
@@ -96,7 +91,6 @@ public class ComplexFunction implements complex_function {
 		while (i<s.length() && s.charAt(i)!= '(')
 		{
 			st+=s.charAt(i);
-			System.out.println("s.charAt(i)"+s.charAt(i));
 			i++;
 		}
 		return st;

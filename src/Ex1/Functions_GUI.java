@@ -22,6 +22,7 @@ public class Functions_GUI implements functions
 {
 	public static Color[] Colors = {Color.blue, Color.cyan, 
 			Color.MAGENTA, Color.ORANGE,Color.red, Color.GREEN, Color.PINK}; 
+
 	LinkedList<function> listF=new LinkedList<function>();
 
 	public Functions_GUI()
@@ -104,62 +105,46 @@ public class Functions_GUI implements functions
 	@Override
 	public void initFromFile(String file) throws IOException
 	{
-		ComplexFunction cf=new ComplexFunction();
-
-		String theLine;
-		function f=null;
-		BufferedReader reader= new BufferedReader(new FileReader(file));
-		theLine= reader.readLine();
-		while(theLine!=null) 
-		{
-
-			System.out.println("&&&&&&&&&&&&&&&&&");
-			System.out.println(theLine);
-			System.out.println("&&&&&&&&&&&&&&&&&");
-
-			f=cf.initFromString(theLine);
-
-			add(f);
-			theLine= reader.readLine();
-
+		try{
+			ComplexFunction cf=new ComplexFunction();
+			String theLine;
+			function f=null;
+			BufferedReader Br= new BufferedReader(new FileReader(file));
+			theLine= Br.readLine();
+			while(theLine!=null) 
+			{
+				f=cf.initFromString(theLine);
+				add(f);
+				theLine= Br.readLine();
+			}
+			Br.close();
 		}
-		reader.close();
-
-
-		//		catch (IOException e) {
-		//			System.out.println("your initFromFile fail");
-		//		}
+		catch (IOException e) {
+			System.out.println("your initFromFile fail");
+		}
 	}
 
 	@Override
 	public void saveToFile(String file) throws IOException 
 	{
-		if (isEmpty())
-			throw new RuntimeException("ERR: your list is empty ");
-		try 
-		{
-			Iterator<function> it = listF.iterator();
-			StringBuilder StringB = new StringBuilder();
-			PrintWriter printW = new PrintWriter(new File(file));
-			while (it.hasNext()) {
-				String st="\n";
-				function func = it.next();
-				StringB.append(func.toString()+st);
-			}	
-			printW.write(StringB.toString());
-			printW.close();
-		} 
-		catch (FileNotFoundException e) 
-		{
-			throw new IOException("ERR: The file is not found");
+		try {
+			String line= "";
+			String sn="\n";
+			Iterator it=listF.iterator();
+			
+			while(it.hasNext()) 
+			{
+				function f=((function)it.next());
+				line+=f.toString()+sn;
+			}
+			
+			FileWriter Fw=new FileWriter(file);
+			Fw.write(line);
+			Fw.close();
 		}
-		catch (Exception e)
-		{
-			throw new IOException("ERR: The file is not writable");
-
+		catch(Exception e) {
+			System.out.println("Error: cant be writen");
 		}
-		
-
 	}
 
 
@@ -182,105 +167,75 @@ public class Functions_GUI implements functions
 		}
 
 		StdDraw.setPenColor(Color.BLACK);
-		StdDraw.setPenRadius(0.005);
+		StdDraw.setPenRadius(0.004);
 
 		StdDraw.line(rx.get_min(), 0, rx.get_max(), 0);
 		StdDraw.line(0, ry.get_min(), 0, ry.get_max());
-
+		StdDraw.setPenRadius(0.006);
+		
 		for (double i = rx.get_min(); i <= rx.get_max(); i++) {
-			StdDraw.text(i, -0.30, Integer.toString(Math.toIntExact((long) i)));
+			StdDraw.text(i, -0.20, Integer.toString(Math.toIntExact((long) i)));
 		}
 		for (double i = ry.get_min(); i <= ry.get_max(); i++) {
 			StdDraw.text(+0.20,i, Integer.toString(Math.toIntExact((long) i)));
 		}
-		int count=0;
+		
+		int jcolor=0;
+		int res=resolution;
 		Iterator s=listF.iterator();
 		StdDraw.setPenRadius(0.005);
-		while(s.hasNext()) {
-			//StdDraw.setFont(new Font("calibrity",Font.PLAIN,14));
-			StdDraw.setPenColor(Colors[count]);
+		
+		while(s.hasNext()) 
+		{
+			StdDraw.setPenColor(Colors[jcolor]);
 			function c=((function)s.next());
 			System.out.println(c);
-			double step=(Math.abs(rx.get_min())+Math.abs(rx.get_max()))/resolution;
-			for(double i=rx.get_min();i<rx.get_max();i=i+step) {
-				double y=c.f(i);
-				double y2=c.f(i+step);
-				StdDraw.line(i,y,i+step, y2);
+			
+			double jump=(Math.abs(rx.get_min())+Math.abs(rx.get_max()))/res;
+			
+			for(double i=rx.get_min(); i<rx.get_max(); i+=jump)
+			{
+				double y1=c.f(i);
+				double y2=c.f(i+jump);
+				StdDraw.line(i,y1,i+jump, y2);
 			}
-			count++;
-			if(count==Colors.length-1)
-				count=0;
-				
+			
+			jcolor++;
+			
+			if(jcolor==Colors.length-1)
+				jcolor=0;
 
 		}
-
-
-
-
 	}
 
 	@Override
 	public void drawFunctions(String jsonFile) 
 	{
-		Gson myGson = new Gson();
+		Gson Gs = new Gson();
 
 		try {
-			FileReader FReader = new FileReader(jsonFile);
-			jsonParam gs=  myGson.fromJson(FReader , jsonParam.class);
-			Range r_x= new Range(gs.rangeX[0] , gs.rangeX[1]);
-			Range r_y= new Range(gs.rangeY[0] , gs.rangeY[1]);
-			drawFunctions(gs.width, gs.height, r_x, r_y, gs.res);
+			FileReader readP= new FileReader(jsonFile);
+			jsonParam pj=Gs.fromJson(readP,jsonParam.class);
+			
+			Range ry=new Range(pj.Range_Y[0],pj.Range_Y[1]);
+			Range rx=new Range(pj.Range_X[0],pj.Range_X[1]);
+			drawFunctions(pj.Width,pj.Height,rx,ry,pj.Resolution);	
 		}
-
-		catch (FileNotFoundException e) 
+		
+		catch(Exception e) 
 		{
-			System.out.println("the file dont found");
-		}
-
-		catch (IOException e) 
-		{
-			System.out.println("your drawFunctions fail");
+			System.out.println("Error: the file cant be reader");
 		}
 
 	}
+	
 	public class jsonParam
 	{
-		public int width;
-		public int height;
-		public double[] rangeX;
-		public double[] rangeY;
-
-		public int res;
+		public int Width;
+		public int Height;
+		public double[] Range_X;
+		public double[] Range_Y;
+		public int Resolution;
 	}
 
-	public static void main(String[] args) throws IOException 
-	{
-		Functions_GUI FuncG = new Functions_GUI();
-		Functions_GUI FuncGS = new Functions_GUI();
-
-		FuncG.initFromFile("C:\\Users\\meita\\eclipse-workspace\\Ex1\\text_for_read\\guiExample.txt");
-		System.out.println("done");
-
-		ComplexFunction cf=new ComplexFunction();
-		function f0 = new ComplexFunction();
-		f0=cf.initFromString("mul(plus(2x^3+6x,9),comp(x,2x))");
-		function f1 = new Polynom("2x^3+6x");
-		function f2 = new Monom("x");
-		Polynom p1 = new Polynom("-2X");
-		Polynom p2 = new Polynom("4X");
-		Monom m1 = new Monom("12x^2");
-		FuncGS.add(f0);
-		FuncGS.add(f1);
-		FuncGS.add(f2);
-		FuncGS.add(p1);
-		FuncGS.add(p2);
-		FuncGS.add(m1);
-		FuncGS.saveToFile("newtext.txt");
-
-		System.out.println("done1");
-		Range x = new Range(-20,20);
-		Range y = new Range(-20,20);
-		FuncGS.drawFunctions(1000,1000,x,y,200);
-	//	FuncG.drawFunctions("C:\\Users\\meita\\eclipse-workspace\\Ex1\\text_for_read.json");
-	}
 }
